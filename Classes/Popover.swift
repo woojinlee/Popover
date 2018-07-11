@@ -196,20 +196,28 @@ open class Popover: UIView {
     return true
   }
 
-  @objc open func dismiss() {
+  @objc open func dismiss(animated: Bool = true) {
     if self.superview != nil {
+        let cleanUp = {
+            self.contentView.removeFromSuperview()
+            self.blackOverlay.removeFromSuperview()
+            self.removeFromSuperview()
+            self.transform = CGAffineTransform.identity
+            self.didDismissHandler?()
+        }
       self.willDismissHandler?()
+        guard animated else {
+            cleanUp()
+            return
+        }
+        
       UIView.animate(withDuration: self.animationOut, delay: 0,
                      options: UIViewAnimationOptions(),
                      animations: {
                       self.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001)
                       self.blackOverlay.alpha = 0
       }){ _ in
-        self.contentView.removeFromSuperview()
-        self.blackOverlay.removeFromSuperview()
-        self.removeFromSuperview()
-        self.transform = CGAffineTransform.identity
-        self.didDismissHandler?()
+        cleanUp()
       }
     }
   }
