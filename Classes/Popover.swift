@@ -501,6 +501,6 @@ private extension Popover {
         return
         
     }
-    dismiss()
+    dismiss(animated: false)
   }
 }
